@@ -112,7 +112,12 @@ flex-direction: column;
     background-color: var(--secondary-color);
     box-shadow: none;
     color: rgb(0, 5, 13);
-    box-shadow: 2px 3px 6px 3px rgba(0, 0, 0, 0.267);
+    box-shadow: 2px 3px 1px 0 rgba(151, 163, 173, 0.68);
+}
+
+.btn:active{
+    box-shadow: none;
+    transform: translate(2px, 3px);
 }
 .score{
     margin-top: 15px;

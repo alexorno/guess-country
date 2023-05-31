@@ -4,9 +4,10 @@ const index = () => {
   const [countrys, setCountrys] = useState([])
   const [countryToGuess, setCountryToGuess] = useState('');
   const [output, setOutput] = useState('');
-  const [guessedCountrys, setGuessedCountrys] = useState([])
+  const [guessedCountrys, setGuessedCountrys] = useState([]);
   const [availableToAnswer, setAvailableToAnswer] = useState(true);
-  const [score, setScore] = useState(0)
+  const [score, setScore] = useState(0);
+  const [inRow,setInRow] = useState(1);
   const answerInput = useRef();
   
   const getCountryList = async () => {
@@ -25,10 +26,17 @@ const index = () => {
     getCountryList();
   }, []);
 
-  const updateCountry = async () => {
+  const updateCountry = () => {
     // randomised country from country array
-    setAvailableToAnswer(true)
-    setCountryToGuess(countrys[Math.floor(Math.random() * countrys.length)]);
+    setAvailableToAnswer(true);
+    const tryCountryToGuess = countrys[Math.floor(Math.random() * countrys.length)];
+
+    const CountryIsGuessed = guessedCountrys.includes(tryCountryToGuess.name);
+    if(CountryIsGuessed){
+      console.log(`already been guessed :`, tryCountryToGuess.name)
+      return updateCountry();
+    }
+    setCountryToGuess(tryCountryToGuess);
   };
 
   const checkCountry = (e) => {
@@ -45,24 +53,34 @@ const index = () => {
     const trueAnswer = (countryToGuess.name).toLowerCase().replace(/\s/g, '');
 
     if(answer === trueAnswer){
-      if(guessedCountrys.includes(countryToGuess.name)){
-        return setOutput('You already guessed this country')
+      if(guessedCountrys.has(countryToGuess.name)){
+        return setOutput('You already guessed/revealed this country')
       } 
-      setOutput(`Good job, it is ${countryToGuess.name}`)
-      setGuessedCountrys(prev => [...prev, countryToGuess.name])
-      setScore(prev => prev+1)
+      setOutput(`Good job, it is ${countryToGuess.name}`);
+      setGuessedCountrys(prev => [...prev, countryToGuess.name]);
+      setScore(prev => prev+( 1 * inRow ));
+      setInRow(prev => prev+1);
     }else{
+      if(score>=0.5){
+        setScore(prev => prev - 0.5)
+      }
+      setInRow(1);
       setOutput(`Sorry, it's not ${answerInput.current.value}`)
     }
   }
-  
+
   const revealCountry = () => {
     if(!countryToGuess){
       return setOutput('Please, press new country');
     }
+    if(!availableToAnswer){
+      return setOutput(`This is flag of ${countryToGuess.name}`);
+    }
     setAvailableToAnswer(false);
     setOutput(`This is flag of ${countryToGuess.name}`);
-    if(score>0){
+    setInRow(1);
+    setGuessedCountrys(prev => [...prev, countryToGuess.name]);
+    if(score > 0){
       setScore((prev) => prev - 1)
     }
   };
@@ -71,7 +89,10 @@ const index = () => {
 
   return (
     <div className='main-container'> 
-    <p className='score'>Your score: {score}</p>
+    <p className='score'>
+    Your score: {score} <br/>
+    Your multiplier: {inRow} 
+    </p>
       <button className='btn update-country' onClick={(e) => updateCountry(e)}>New Country</button>
       <div className='flag-image'>
         {countryToGuess ? <img className='flag-img' src={`${countryToGuess.flag}`} /> : <div className='flag-img'><p>?</p></div>}
@@ -84,6 +105,14 @@ const index = () => {
         <button className='btn' type='button' onClick={() => revealCountry()}> Reveal country </button>
         <p className='output'>{output}</p>
       </form>
+      <div>
+        <h6 style={{textAlign: 'center'}}>Guessed/revealed countries: </h6>
+        <ul>
+          {guessedCountrys.map((item) => (
+          <li key={item}> {item} </li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }
