@@ -53,7 +53,7 @@ const index = () => {
     const trueAnswer = (countryToGuess.name).toLowerCase().replace(/\s/g, '');
 
     if(answer === trueAnswer){
-      if(guessedCountrys.has(countryToGuess.name)){
+      if(guessedCountrys.includes(countryToGuess.name)){
         return setOutput('You already guessed/revealed this country')
       } 
       setOutput(`Good job, it is ${countryToGuess.name}`);
