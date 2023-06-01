@@ -80,7 +80,7 @@ const index = () => {
     setOutput(`This is flag of ${countryToGuess.name}`);
     setInRow(1);
     setGuessedCountrys(prev => [...prev, countryToGuess.name]);
-    if(score > 0){
+    if(score >= 1){
       setScore((prev) => prev - 1)
     }
   };
